@@ -16,8 +16,9 @@ import "./styles.scss";
 const EMPTY = "EMPTY";
 const SHOW = "SHOW";
 const CREATE = "CREATE";
-const SAVING = "SAVINIG";
+const EDIT = "EDIT";
 const DELETE = "DELETE";
+const SAVING = "SAVINIG";
 const CONFIRM = "CONFIRM";
 
 
@@ -50,8 +51,9 @@ export default function Appointment(props) {
       <Header time={time} />
       <article className="appointment">
         {mode === EMPTY && <Empty onAdd={() => transition(CREATE)} />}
-        {mode === SHOW && <Show student={interview.student} interviewer={interview.interviewer} onDelete={() => transition(CONFIRM)} />}
-        {mode === CREATE && <Form interviewers={interviewers} onSave={save} onCancel={back} />}
+        {mode === SHOW && <Show student={interview.student} interviewer={interview.interviewer} onDelete={() => transition(CONFIRM)} onEdit={() => transition(EDIT)} />}
+        {mode === CREATE && <Form interviewers={interviewers} onSave={save} onCancel={() => back()} />}
+        {mode === EDIT && <Form student={interview.student} interviewer={interview.interviewer.id} interviewers={interviewers} onSave={save} onCancel={() => back()} />}
         {mode === SAVING && <Status message='Saving' />}
         {mode === CONFIRM && <Confirm message={"Are you sure you want to cancel?"} onCancel={() => { transition(SHOW) }} onConfirm={cancel} />}
         {mode === DELETE && <Status message='Deleting' />}

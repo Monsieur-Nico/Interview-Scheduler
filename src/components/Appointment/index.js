@@ -11,6 +11,7 @@ import Confirm from "./Confirm";
 
 // Styles:
 import "./styles.scss";
+import Error from "./Error";
 
 // Modes:
 const EMPTY = "EMPTY";
@@ -20,6 +21,8 @@ const EDIT = "EDIT";
 const DELETE = "DELETE";
 const SAVING = "SAVINIG";
 const CONFIRM = "CONFIRM";
+const ERROR_SAVE = "ERROR_SAVE";
+const ERROR_DELETE = "ERROR_DELETE";
 
 
 export default function Appointment(props) {
@@ -29,21 +32,24 @@ export default function Appointment(props) {
   );
 
   function save(name, interviewer) {
-    transition(SAVING, true);
     const interview = {
       student: name,
       interviewer
     };
-    bookInterview(id, interview).then(() => {
-      transition(SHOW);
-    })
+
+    transition(SAVING, true);
+
+    bookInterview(id, interview)
+      .then(() => transition(SHOW))
+      .catch(() => transition(ERROR_SAVE, true))
+
   }
 
   function cancel() {
     transition(DELETE, true);
-    cancelInterview(id).then(() => {
-      transition(EMPTY);
-    })
+    cancelInterview(id)
+      .then(() => transition(EMPTY))
+      .catch(() => transition(ERROR_DELETE, true))
   }
 
   return (
@@ -57,6 +63,8 @@ export default function Appointment(props) {
         {mode === SAVING && <Status message='Saving' />}
         {mode === CONFIRM && <Confirm message={"Are you sure you want to cancel?"} onCancel={() => { transition(SHOW) }} onConfirm={cancel} />}
         {mode === DELETE && <Status message='Deleting' />}
+        {mode === ERROR_SAVE && <Error message={"Couldn't save"} onClose={back} />}
+        {mode === ERROR_DELETE && <Error message={"Couldn't delete'"} onClose={back} />}
       </article>
     </Fragment>
   );

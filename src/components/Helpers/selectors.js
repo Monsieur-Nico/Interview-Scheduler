@@ -18,7 +18,6 @@ const getInterview = function(state, interview) {
   if (!interview) {
     return null;
   }
-  console.log(interview);
   return { ...interview, interviewer: interviewers[interview.interviewer] };
 }
 

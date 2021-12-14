@@ -3,8 +3,10 @@ import axios from "axios";
 import DayList from "./DayList"
 import Appointment from "./Appointment";
 
+// Styles:
 import "components/Application.scss";
 
+// Helper functions:
 import { getAppointmentsForDay, getInterview, getInterviewersForDay } from "./Helpers/selectors";
 
 export default function Application(props) {
@@ -14,6 +16,20 @@ export default function Application(props) {
     days: [],
     appointments: {}
   });
+
+  function bookInterview(id, interview) {
+    const appointment = {
+      ...state.appointments[id],
+      interview: { ...interview }
+    };
+    const appointments = {
+      ...state.appointments,
+      [id]: appointment
+    };
+    return axios.put(`/api/appointments/${id}`,
+      { interview: appointments[id].interview })
+      .then(() => setState(prevStatus => ({ ...prevStatus, appointments })))
+  }
 
   const dailyAppointments = getAppointmentsForDay({ days: state.days, appointments: state.appointments }, state.day);
   const interviewers = getInterviewersForDay({ days: state.days, interviewers: state.interviewers }, state.day);
@@ -27,10 +43,10 @@ export default function Application(props) {
         {...appointment}
         interview={interview}
         interviewers={interviewers}
+        bookInterview={bookInterview}
       />
     );
   });
-
 
   const setDay = day => setState({ ...state, day });
 

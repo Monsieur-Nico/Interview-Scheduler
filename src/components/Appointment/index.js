@@ -7,18 +7,22 @@ import Empty from "./Empty";
 import Show from "./Show";
 import Form from "./Form";
 import Status from "./Status";
+import Confirm from "./Confirm";
 
 // Styles:
 import "./styles.scss";
 
-// Strings:
+// Modes:
 const EMPTY = "EMPTY";
 const SHOW = "SHOW";
 const CREATE = "CREATE";
 const SAVING = "SAVINIG";
+const DELETE = "DELETE";
+const CONFIRM = "CONFIRM";
+
 
 export default function Appointment(props) {
-  const { time, interview, interviewers, bookInterview, id } = props;
+  const { id, time, interview, interviewers, bookInterview, cancelInterview } = props;
   const { mode, transition, back } = useVisualMode(
     interview ? SHOW : EMPTY
   );
@@ -34,19 +38,23 @@ export default function Appointment(props) {
     })
   }
 
+  function cancel() {
+    transition(DELETE, true);
+    cancelInterview(id).then(() => {
+      transition(EMPTY);
+    })
+  }
+
   return (
     <Fragment>
       <Header time={time} />
       <article className="appointment">
         {mode === EMPTY && <Empty onAdd={() => transition(CREATE)} />}
-        {mode === SHOW && (
-          <Show
-            student={interview.student}
-            interviewer={interview.interviewer}
-          />
-        )}
-        {mode === SAVING && (<Status message='Saving' />)}
+        {mode === SHOW && <Show student={interview.student} interviewer={interview.interviewer} onDelete={() => transition(CONFIRM)} />}
         {mode === CREATE && <Form interviewers={interviewers} onSave={save} onCancel={back} />}
+        {mode === SAVING && <Status message='Saving' />}
+        {mode === CONFIRM && <Confirm message={"Are you sure you want to cancel?"} onCancel={() => { transition(SHOW) }} onConfirm={cancel} />}
+        {mode === DELETE && <Status message='Deleting' />}
       </article>
     </Fragment>
   );

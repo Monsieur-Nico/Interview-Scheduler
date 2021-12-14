@@ -17,6 +17,7 @@ export default function Application(props) {
     appointments: {}
   });
 
+  // Booking an appointment
   function bookInterview(id, interview) {
     const appointment = {
       ...state.appointments[id],
@@ -28,6 +29,22 @@ export default function Application(props) {
     };
     return axios.put(`/api/appointments/${id}`,
       { interview: appointments[id].interview })
+      .then(() => setState(prevStatus => ({ ...prevStatus, appointments })))
+  }
+
+  // Cancelling an appointment
+  function cancelInterview(id) {
+    const appointment = {
+      ...state.appointments[id],
+      interview: null
+    };
+
+    const appointments = {
+      ...state.appointments,
+      [id]: appointment
+    };
+    return axios.delete(`/api/appointments/${id}`,
+      { interview: null })
       .then(() => setState(prevStatus => ({ ...prevStatus, appointments })))
   }
 
@@ -44,6 +61,7 @@ export default function Application(props) {
         interview={interview}
         interviewers={interviewers}
         bookInterview={bookInterview}
+        cancelInterview={cancelInterview}
       />
     );
   });

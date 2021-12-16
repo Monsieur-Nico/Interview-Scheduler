@@ -12,9 +12,13 @@ import useApplicationData from "../hooks/useApplicationData"
 export default function Application(props) {
   const { state, setDay, bookInterview, cancelInterview } = useApplicationData();
 
+  // Call the getAppointmentsForDay function to get an array of appointment
   const dailyAppointments = getAppointmentsForDay({ days: state.days, appointments: state.appointments }, state.day);
+
+  // Call the getInterviewersForDay function to get an array of interviewers
   const interviewers = getInterviewersForDay({ days: state.days, interviewers: state.interviewers }, state.day);
 
+  // Loop through the appointments and make a new array containing the appointments in JSX
   const schedule = dailyAppointments.map(appointment => {
     const interview = getInterview(state, appointment.interview);
 

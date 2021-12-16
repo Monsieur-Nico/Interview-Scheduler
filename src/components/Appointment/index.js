@@ -26,29 +26,39 @@ const ERROR_DELETE = "ERROR_DELETE";
 
 
 export default function Appointment(props) {
+  // Destructurre props
   const { id, time, interview, interviewers, bookInterview, cancelInterview } = props;
+  // use "useVisualMode" to choose which mode to display
   const { mode, transition, back } = useVisualMode(
+    // If there's an interview switch to show, if now switch to empty
     interview ? SHOW : EMPTY
   );
 
+  // Function to handle saving the changes
   function save(name, interviewer) {
     const interview = {
       student: name,
       interviewer
     };
 
+    // Change to saving mode
     transition(SAVING, true);
 
     bookInterview(id, interview)
+      // Show the changes after booking
       .then(() => transition(SHOW))
+      // Show error if it exists
       .catch(() => transition(ERROR_SAVE, true))
 
   }
 
   function cancel() {
     transition(DELETE, true);
+    // Call the cancelInterview function coming from useApplicationDate through Application.js
     cancelInterview(id)
+      // If it successfully updates show empty appointment
       .then(() => transition(EMPTY))
+      // If there's an error switch to error mode
       .catch(() => transition(ERROR_DELETE, true))
   }
 
